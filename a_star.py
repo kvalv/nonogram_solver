@@ -119,14 +119,10 @@ class A_Star(ABC):
             and returns True, otherwise returns False.
             """
             if any([node == each for each in self.known_nodes]):
-                # import pdb; pdb.set_trace()
-            # if node.state == each
-            # if node.state in [each.state for each in self.known_nodes]:
                 idx = [each.state for each in self.known_nodes].index(node.state)
                 visited_node = self.known_nodes[idx]
                 node = visited_node
 
-                print('yes')
                 import pdb; pdb.set_trace()
                 return True
             else:
@@ -168,19 +164,11 @@ class A_Star(ABC):
             if visual:
                 node.visualize_state(self.window)
 
-            print(f'step {i}, with open queue of size {len(self.open_queue)} and h={node.h}')
+            print(f'step{i}\t\tqueue size {len(self.open_queue)}\t\th={node.h}')
             i += 1
 
-            # if i % 100 == 0:
-            #     x,y = node.state
-            #     print('\n\n')
-            #     print([len(e) for e in x])
-            #     print([len(e) for e in y])
-            #     time.sleep(1)
-            #     print('\n\n')
             if self.goal_fun(node):
                 self.solution = node
-                self.summarize()
 
                 return node
 
@@ -188,9 +176,13 @@ class A_Star(ABC):
 
         raise Exception('No solution is found')
 
-    def summarize(self):
+    def print_summary(self):
         n_moves = len(self.solution.get_ancestors()) - 1  # initial is not a move
         n_expand = len(self.closed_queue)
         n_created = n_expand + len(self.open_queue)
 
-        return f'path length: {n_moves} \n Visited {n_expand} and created {n_created} nodes'  # noqa
+        print('\n\n---------------------')
+        print('        summary')
+        print('---------------------')
+        print(f'path length: {n_moves}\nnodes created: {n_created}\nnodes visited: {n_expand}')
+        return None
