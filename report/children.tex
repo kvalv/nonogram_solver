@@ -1,0 +1,11 @@
+\subsection*{Successor generation}
+Given a node, fetch the state and try to move all cars in all possible
+directions that is still considered valid. A valid move is a move where no car
+intersect or move outside of the board. Each of these car movements generate a new state,
+and there is a new node generated for each of these new states. If the new state has been
+encountered befre (the algorithm keeps track of all known states), then the new node
+will inherit the same parent, $f$, $g$ and $h$-value as the already-existing node.
+The parent node will append the new nodes as its children.
+
+
+

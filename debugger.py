@@ -1,7 +1,7 @@
 import numpy as np
 from parse import parse_file
 import segments as sgm
-from csp2 import Nonogram_Solver
+from csp import Nonogram_Solver
 import ipdb, traceback, sys, inspect
 import debug_wrappers 
 import drawing

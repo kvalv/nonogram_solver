@@ -58,46 +58,37 @@ class Nonogram_Solver(A_Star):
             N = make_node([x, y], parent)
             return N
 
-        lengths = [len(e) for e in rows]
-        indices = [np.argsort(lengths)[0]]
-        i = 0
-        while lengths[indices[0]] == 1:
-            i += 1
-            indices = [np.argsort(lengths)[i]]
-        for idx, row_candidates in enumerate(rows):
-            if idx not in indices:
-                continue
-            row_lengths = [len(e) for e in rows if len(e) != 1]
-            if len(row_candidates) == 1 or len(row_candidates) >= np.mean(row_lengths):
-                continue
+        def fewest_candidates(lines):
+            """
+            Find the index of most promising entry based on smallest entry length (except 1).
+            """
+            lengths = np.array([len(e) for e in lines])
+            lengths[lengths == 1] = max(lengths)
+            return np.argsort(lengths)[0]
 
-            for row in row_candidates:
-                rows_with_assumption = copy.deepcopy(rows)
-                rows_with_assumption[idx] = np.tile(row, [1, 1])
-                try:
-                    x, y = sgm.iter_enforce_cell_constraints(rows_with_assumption, cols, column_size, row_size)
-                    yield make_node([x, y], parent)
-                except InfeasibleStateException:
-                    pass
+        idx = fewest_candidates(rows)
+        row_candidates = rows[idx]
 
-        lengths = [len(e) for e in cols]
-        indices = [np.argsort(lengths)[0]]
-        i = 0
-        while lengths[indices[0]] == 1:
-            indices = [np.argsort(lengths)[i]]
-            i += 1
-        for idx, col_candidates in enumerate(cols):
-            if idx not in indices:
-                continue
+        for row in row_candidates:
+            rows_with_assumption = copy.deepcopy(rows)
+            rows_with_assumption[idx] = np.tile(row, [1, 1])
+            try:
+                x, y = sgm.iter_enforce_cell_constraints(rows_with_assumption, cols, column_size, row_size)
+                yield make_node([x, y], parent)
+            except InfeasibleStateException:
+                pass
 
-            for col in col_candidates:
-                cols_with_assumption = copy.deepcopy(cols)
-                cols_with_assumption[idx] = np.tile(col, [1, 1])
-                try:
-                    x, y = sgm.iter_enforce_cell_constraints(rows, cols_with_assumption, column_size, row_size)
-                    yield make_node([x, y], parent)
-                except InfeasibleStateException:
-                    pass
+        idx = fewest_candidates(cols)
+        col_candidates = cols[idx]
+
+        for col in col_candidates:
+            cols_with_assumption = copy.deepcopy(cols)
+            cols_with_assumption[idx] = np.tile(col, [1, 1])
+            try:
+                x, y = sgm.iter_enforce_cell_constraints(rows, cols_with_assumption, column_size, row_size)
+                yield make_node([x, y], parent)
+            except InfeasibleStateException:
+                pass
 
     def cost_fun(self, parent, child):
         return 0

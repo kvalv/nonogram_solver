@@ -1,0 +1,42 @@
+\subsection*{choice of \texttt{h} function}
+A state consists of candidates for each row and column. Let $nc_i$ be the
+number of column candidates for column $i$. Similarly, we define $nr_j$ as the
+number of candidate rows for row $j$. Then, $h$ is defined as
+
+\begin{displaymath}
+  h = \sum\limits_{i \in \texttt{cols}} log(nc_i) + \sum\limits_{j \in \texttt{rows}} log(nr_j)
+\end{displaymath}
+
+Logarithm's are used to prevent numerical overflow. This could occur if there
+are a large number of rows / columns or if the range is sufficiently large. If any
+$nc_i = 1$ then they will not contribute to the heuristic function because $log(1) = 0$.
+
+\subsection*{Choice of variable on next assumption}
+The choice of variable on which to base the next assumption is solely based
+on the number of candidates (domain cardinality) for that variable. If there
+are few candidates, then it will be faster to visit all possible states by
+assuming specific values for that variable. On the other hand, if the domain
+is large, it'll take mroe time to visit all subsequent nodes. Therefore, the
+line with fewest candidates (greater than 1) is chosen. The algorithm below
+implements this and returns the line index with smallest domain.
+
+\begin{algorithm}
+\begin{footnotesize}
+\begin{lstlisting}[language=Python, caption=Algorithm used to find the row / column with smallest domain.]
+def fewest_candidates(lines):
+  lengths = np.array(
+    [len(each) for each in lines])
+
+  lengths[lengths == 1] = max(lengths)
+
+  return np.argsort(lengths)[0]
+\end{lstlisting}
+\end{footnotesize}
+\end{algorithm}
+
+This heuristic is important because if there are a lot of candidates for a specific line,
+then it will be computationally expensive to generate assumptions on each one of them.
+Since only one candidate will be correct for each line, we would like to reduce the number
+of assumptions made. That is the main reason for implementing the \texttt{fewest\_candidates}
+algorithm to reduce the number of assumptions made. This made larger puzzles, such as
+the \textit{reindeer}-puzzle computationally feasible.

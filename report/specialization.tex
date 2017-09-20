@@ -1,0 +1,21 @@
+Several tweaks of the \texttt{A*}-algorithm had to be done in order for the
+nonogram solver to work. The \texttt{A*}-algorithm is implemented as an abstract base class in Python.
+This means that several methods had to be implemented.  The methods that had to
+be implemented were as follows:
+
+\begin{itemize}
+    \item \textbf{\texttt{goal\_fun}}: Specifies if a certain state has reached
+    the goal or not. Done by checking if $\forall_i: \|\mathcal{D}(x_i)\| = 1$
+    holds or not.
+
+    \item \textbf{\texttt{cost\_fun}}: Specifies the cost of going from \texttt{parent}
+    to \texttt{child} where \texttt{parent} and \texttt{child} are
+    Node-instances. In this case, the cost function returns a 1. The function
+    could also be 0, but this makes it more susceptible to deep nesting of
+    states.
+    
+    \item \textbf{\texttt{generate\_children}}: This is the heart of the
+    \texttt{A*}-algorithm. Specifies how the children are generated. Here also
+    the domain creation + constraint enforcement is done.
+
+\end{itemize}

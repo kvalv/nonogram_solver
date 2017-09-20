@@ -1,0 +1,69 @@
+\documentclass[notitlepage, 10pt, twocolumn]{report} % article also possible. ignored twocolumn option
+\usepackage[margin=1.3in]{geometry}
+\usepackage{caption}
+
+\usepackage[utf8]{inputenc}
+\usepackage[font=small,labelfont=bf]{caption} % caption stuff
+
+\usepackage[]{algorithm2e}
+\usepackage{algorithmic}
+\usepackage{listings}
+
+\usepackage{lipsum}
+\usepackage{titling}
+
+% \usepackage[demo]{graphicx} % [demo] option for empty figure
+\usepackage{dblfloatfix}    % To enable figures at the bottom of page
+
+\usepackage{graphicx}
+\graphicspath{{./images/}}
+\usepackage{amssymb}
+\usepackage[T1]{fontenc} % for < and >
+
+
+\usepackage{titlesec}
+\titleformat{\section}
+  {\large\bf\scshape}{\thesection}{2em}{}
+\titleformat{\subsection}
+  {\rm\scshape}{\thesubsection}{0em}{}
+
+% I have no idea what this is tho
+\pretitle{\begin{center}\Huge\bfseries}
+\posttitle{\par\end{center}\vskip 0.5em}
+\preauthor{\begin{center}\large\bfseries}
+\postauthor{\end{center}}
+\predate{\par\large\centering}
+\postdate{\par}
+
+\let\endtitlepage\relax
+
+
+\title{Solving nonograms using \texttt{A*-GAC}}
+\author{Mikael Kvalvær}
+\date{\today}
+
+% \begin{abstract}
+%   \input{abstract.tex}
+% \end{abstract}
+% \maketitle
+
+\begin{document}
+\maketitle
+
+\section{Representation of the problem}
+  \input{representation.tex}
+
+\section{Heuristics used}
+  \input{heuristics.tex}
+
+\section{Specialization of the \texttt{A*} algorithm}
+  \input{specialization.tex}
+
+\section{Other design aspects}
+  \input{design_aspects.tex}
+
+\section{Results}
+  \input{results.tex}
+
+
+\end{document}

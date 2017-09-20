@@ -4,30 +4,30 @@ import numpy as np
 from exception import InfeasibleStateException
 
 
-def generate_segments_by_constraints(lengths, tot_length, from_index=0,  index=0, the_segment=None):
+def generate_segments_by_constraints(
+        lengths, tot_length, min_index=0,  index=0, the_segment=None):
     """
     Generates segments for lengths[idx]. Assumes i < idx is processed
     and j > idx unprocessed
     """
+    gen = generate_segments_by_constraints
 
     if index == 0:
         the_segment = np.zeros(tot_length, dtype=np.int64)
-
-    min_idx = np.int64(from_index)
 
     length_ahead = np.sum(lengths[index:]) + len(lengths[index:]) - 1
     max_idx = (tot_length - length_ahead).astype(np.int64)
 
     last_index = index == len(lengths) - 1
 
-    for each in range(min_idx, max_idx + 1):
+    for each in range(min_index, max_idx + 1):
         new_segment = copy.deepcopy(the_segment)
         new_segment[each:each + lengths[index]] += np.int64(1)
-        from_index_prime = each + lengths[index] + 1
+        min_index_prime = each + lengths[index] + 1
 
         if not last_index:
-            for var in generate_segments_by_constraints(lengths, tot_length, from_index_prime, index + 1, new_segment):
-                yield var
+            for next_ in gen(lengths, tot_length, min_index_prime, index + 1, new_segment):
+                yield next_
         else:
             yield new_segment
 
@@ -76,7 +76,7 @@ def keep_by_cell_value(rows_or_columns, index, cell_value):
 
 def find_critical_cells(segment_candidates):
     """
-    Finds common 0's and 1's in `segment_candidates` 
+    Finds common 0's and 1's in `segment_candidates`
 
     Example: segment_candidates = [ [[0, 1, 0], [1, 1, 0]],
                                     [[1, 1, 1]],

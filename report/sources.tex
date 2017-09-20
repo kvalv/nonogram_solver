@@ -1,0 +1,29 @@
+\newcounter{ctrProperty}
+% Defining a custom Property environment
+\newenvironment{myProperty}{%
+   \refstepcounter{ctrProperty}%
+   \mbox{\thectrProperty}%
+   \itshape\ignorespaces%
+}{\par}
+
+
+\twocolumn[
+  \section*{sources}
+  \begin{@twocolumnfalse}
+  {\small
+  1. Sutvesker et. al (2014), \textit{Sequence to Sequence Learning with Neural Networks} arXiv:1409.3215
+
+    2. Bahdanau et. al (2014) \textit{Neural Machine Translation by Jointly Learning to Align and Translate} arXiv:1409.0473
+
+    3. Luong et. al (2015) \textit{Effective Approaches to Attention-based Neural Machine Translation}\\arXiv:1508.04025
+
+    4. Marsan Ma (2017) \textit{Chat Corpus Repository} downloaded from\\https://github.com/Marsan-Ma/chat\_corpus
+
+    5. Serban et. al (2015) \textit{Building End-To-End Dialogue Systems Using Generative Hierarchical Neural Network Models} arXiv:1507.04808
+
+    6. Li, J. (2015) \textit{A Diversity-Promoting Objective Function for Neural Conversational Models}\\arXiv:1510.03055 
+
+    7. Ma, Marsan (2017) \textit{Tensorflow Chatbot} downloaded from\\https://github.com/Marsan-Ma/tf\_chatbot\_seq2seq\_antilm
+  }
+  \end{@twocolumnfalse}
+]

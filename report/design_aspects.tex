@@ -1,0 +1,21 @@
+\subsection*{iterated filtering}
+Some tweaks were added to the function \texttt{generate\_children} of the solver.
+The function takes in a state $S = (X,Y)$ where $X$ represent the row
+candidates and $Y$ represent the column candidates. For each row $x \in X$, we
+filter the columns $y_i \in Y$ based on the common indices of $x$. For example,
+if we define the entry $x_1$ as follows:
+
+\begin{itemize}
+    \item $x_1[0] = $\texttt{[1,0,0,1]}
+    \item $x_1[1] = $\texttt{[1,0,1,0]}
+\end{itemize}
+
+Then we know for sure that any candidate in $x_1$ must have the entries \texttt{[1,0,?,?]}
+because they are common in all candidates.  We filter out all columns in $y_0$
+and $y_1$ where their value do not agree. This will do the transformation
+$y_1 \to y_1'$ where $y_1'$ is the set of candidates in $y_1$ that satisfies the
+common cells from $x_1$. We can next filter the different $x_i
+\in X$ based on the 'reduced set' $Y' = [y_1', y_2, ...]$. This procedure can
+be applied iteratively until we have a set $Y^*$ that does not change when
+filtered on the corresponding set $X^*$ and vice versa. This greatly increased
+the processing speed of the model.
