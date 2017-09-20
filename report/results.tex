@@ -2,6 +2,15 @@ An overview of performance is shown in the table at the bottom of the page. The
 table compares the different puzzles and shows the time taken, path length,
 node created and nodes visited in a given puzzle.
 
+\subsection*{effect of using heuristics}
+As can be seen from the table, the puzzles \textit{sailboat}, \textit{snail}
+and \textit{telephone} used 0.076, 0.188 and 0.054 seconds respectively. A test
+where the two heuristic functions were removed was done. This increased the
+computational time to 1.49, 2.272 and 0.396 respectively. Thus, in this case,
+the use of heuristics made the solver solve the problems minimum \textbf{7 times}
+faster.  In addition, the \textit{reindeer}-problem was not feasible without
+the use of heuristics. The attempt was finished after running 2 hours.
+
 \newenvironment{bottompar}{\par\vspace*{\fill}}{\clearpage}
 \begin{bottompar}
 \makebox[\textwidth][c]{
@@ -22,3 +31,5 @@ node created and nodes visited in a given puzzle.
 \end{tabular}
 }
 \end{bottompar}
+
+\vfill\null

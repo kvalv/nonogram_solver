@@ -156,13 +156,14 @@ class A_Star(ABC):
         i = 0
         while self.open_queue:
             node = self.open_queue.pop(0)
+
+            if self.window:
+                node.visualize_state(self.window)
+
             self.closed_queue.append(node)
 
             if not self.as_dfs:  # sort if it's not dfs
                 self.open_queue.sort(key=lambda N: N.f, reverse=False)
-
-            if visual:
-                node.visualize_state(self.window)
 
             print(f'step{i}\t\tqueue size {len(self.open_queue)}\t\th={node.h}')
             i += 1

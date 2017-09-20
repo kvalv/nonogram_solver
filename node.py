@@ -1,4 +1,5 @@
 import numpy as np
+import drawing
 import seaborn as sns
 from graphics import Rectangle, Point
 import time
@@ -27,19 +28,8 @@ class Node():
         self.parent = None
         self.children = []
 
-        # n_colors = len(self.state)
-        # self.color_palette = ['#ff0000'] + sns.color_palette('muted', n_colors).as_hex()
-
-    ###def __repr__(self):
-    ###    row_candidates = [len(x) for x in self.state[0]]
-    ###    col_candidates = [len(y) for y in self.state[1]]
-    ###    return f'node, \nrow_candidates: {row_candidates},\ncol_candidates: {col_candidates}\n'
-
     def __eq__(self, other):
         return np.array_equal(self.state, other.state)
-    #     import pdb; pdb.set_trace()
-    #     pass
-    #     return self.state == other.state
 
     def __neq__(self, other):
         return not self.__eq__(other)
@@ -50,26 +40,10 @@ class Node():
         while current.parent:
             current = current.parent
             chain.append(current)
-
-        # if len(chain) != 1:
-        #     chain.append(current)
-
         return chain
 
     def visualize_state(self, window):
-        while window.items:
-            window.items[0].undraw()
-
-        rectangles = []
-
-        for (state, color) in zip(self.state, self.color_palette):
-            rectangle = gen_rectangle(*state, color=color)
-            rectangles.append(rectangle)
-            rectangle.draw(window)
-
-        # time.sleep(0.1)
-
-    def visualize_trace(self, window):
-        for each in self.get_ancestors()[::-1]:
-            import pdb; pdb.set_trace()
-            each.visualize_state(window)
+        drawing.draw_state(self.state, window)
+        time.sleep(0.1)
+        # window.getMouse()
+        # window.close()

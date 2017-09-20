@@ -37,7 +37,7 @@ expression $L + (n-1)$ represent the minimum space occupied by all cells.
 For example, we can see in the first row that $M = 20$, $L = 4 + 5 = 9$ and $n-1 = 1$.
 From this we can deduce that the last index that the first segment can start on
 is $20 - 9 - 1 = 10$. A recursive procedure is applied that finds the domains
-for each variable\\
+for each variable.\\
 
 \noindent
 \textbf{constraints}: The discussion above showed how the domains of each
@@ -48,8 +48,7 @@ each row and a list of possible columns for each column.
 Furthermore, each column and row must agree with each other on which cells are marked
 and which are not. Any row that marks a cell that is for certain not in the
 corresponding column must be removed. Similarly, any column that marks a cell
-that is for certain not in the corresponding row must be removed. Pseudocode
-of this filtering algorithm is shown below.\\
+that is for certain not in the corresponding row must be removed.\\
 
 % \begin{algorithm}
 %     \begin{small}

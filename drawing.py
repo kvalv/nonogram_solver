@@ -1,6 +1,7 @@
 import numpy as np
 from graphics import Point, GraphWin
 from graphics import *
+import segments as sgm
 
 def make_rectangle(x, y, color='black', len_x=1, len_y=1, dx=10, dy=10):
     p1 = Point(x*dx, y*dy)
@@ -27,18 +28,29 @@ def draw_line(window, line, index, horizontal=True, color='black', opacity=100):
                 rectangle.draw(window)
     pass
 
+def common(lines):
+    lines
+    ...
+
 def draw_state(state, window):
     while window.items:
         window.items[0].undraw()
 
     rows, cols = state
     def filter_line(lines):
+        L = []
+        N = len(lines[0][0])
         for i, each in enumerate(lines):
-            if len(each) > 1:
-                # import pdb; pdb.set_trace()
-                lines[i] = [np.zeros(len(each[0]))]
-        return lines
+            entry = np.zeros(N)
+            indices = sgm._find_common_cells(each)
+            entry[indices] = 1
+            L.append([entry])
+        return L
 
+    import copy
+    R = copy.deepcopy(rows)
+    C = copy.deepcopy(cols)
+    # import pdb; pdb.set_trace()
     rows, cols = filter_line(rows), filter_line(cols)
 
     rows = np.rot90([np.fliplr(e) for e in rows], k=2)

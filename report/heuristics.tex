@@ -16,7 +16,7 @@ The choice of variable on which to base the next assumption is solely based
 on the number of candidates (domain cardinality) for that variable. If there
 are few candidates, then it will be faster to visit all possible states by
 assuming specific values for that variable. On the other hand, if the domain
-is large, it'll take mroe time to visit all subsequent nodes. Therefore, the
+is large, it'll take more time to visit all subsequent nodes. Therefore, the
 line with fewest candidates (greater than 1) is chosen. The algorithm below
 implements this and returns the line index with smallest domain.
 

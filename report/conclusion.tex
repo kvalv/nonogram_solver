@@ -1,0 +1,14 @@
+A nonogram solver using GAC and \texttt{A*} was implemented. A good representation of the
+state was important to get good performance. A direct representation of the puzzle
+is possible, albeit it is not effective to apply in computations. Therefore, an aggregate representation was used.
+
+Tweaks had to be done to improve the performance. Most notably was the use of heuristic functions which made some 
+problems feasible, and improved the solving times by a minimum factor of 7.
+
+The solver could improve its performance by implementing more elaborate heuristics. The article
+\textit{Solving Japanese Puzzles with Heuristics} by Salcedo-Sanz et. al gives some pointers. 
+In addition, the \texttt{copy.deepcopy} method could be changed to reduce time spent on copying data objects.   
+
+
+
+
