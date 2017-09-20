@@ -10,7 +10,6 @@ def make_rectangle(x, y, color='black', len_x=1, len_y=1, dx=10, dy=10):
     r.setFill(color)
     return r
 
-
 def generate_window(x_dim, y_dim):
     x_dim = x_dim * 10
     y_dim = y_dim * 10
@@ -33,17 +32,23 @@ def draw_state(state, window):
         window.items[0].undraw()
 
     rows, cols = state
-    # rows = np.rot90(np.matrix(rows), k=2)
+    def filter_line(lines):
+        for i, each in enumerate(lines):
+            if len(each) > 1:
+                # import pdb; pdb.set_trace()
+                lines[i] = [np.zeros(len(each[0]))]
+        return lines
+
+    rows, cols = filter_line(rows), filter_line(cols)
+
     rows = np.rot90([np.fliplr(e) for e in rows], k=2)
-    # rows = np.asarray(np.matrix(rows))
-    # do a transofrmation..
+    # rows = [np.fliplr(e) for e in rows]
     cols = np.rot90(np.matrix(np.array([e for e in cols]),),k=3)
     C = cols
     L = []
     for each in C:
         L.append(np.tile(np.asarray(each)[0], [1,1]))
     L = np.array(L)
-    # cols = np.asarray(cols)
     
     def draw_lines_in_direction(lines, color='black', horizontal=True):
         if horizontal==False:
@@ -59,7 +64,6 @@ def draw_state(state, window):
                     draw_line(window, each, idx, color=color, opacity=10, horizontal=horizontal)
 
     draw_lines_in_direction(rows, color='blue', horizontal=True)
-    import pdb; pdb.set_trace()
     draw_lines_in_direction(L, color='red', horizontal=False)
     pass
     
@@ -75,5 +79,3 @@ def visualize_state(self, window):
         rectangle = gen_rectangle(*state, color=color)
         rectangles.append(rectangle)
         rectangle.draw(window)
-                                                               
-    # time.sleep(0.1)
