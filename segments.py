@@ -1,17 +1,7 @@
-# begin
-
 import copy
-import itertools
 import numpy as np
 
 from exception import InfeasibleStateException
-
-
-def bitmap(indices, lengths, tot_length):
-    L = np.zeros(tot_length)
-    for i, l in zip(indices, lengths):
-        L[i:i + l] = 1
-    return L.astype(np.int64)
 
 
 def generate_segments_by_constraints(lengths, tot_length, from_index=0,  index=0, the_segment=None):
@@ -40,12 +30,9 @@ def generate_segments_by_constraints(lengths, tot_length, from_index=0,  index=0
                 yield var
         else:
             yield new_segment
-            # yield np.tile(new_segment, [1, 1])
-
-        # raise StopIteration
 
 
-def find_common_cells(rows_or_columns, cell_value=1):
+def _find_common_cells(rows_or_columns, cell_value=1):
     """
     Given candidates for a row / column, find all the indices where the rows / columns
     all have `cell_value`.
@@ -59,17 +46,14 @@ def find_common_cells(rows_or_columns, cell_value=1):
     returns: np.array([0])
     """
 
-    X = np.vstack(rows_or_columns)
+    T = np.array(rows_or_columns)
     if cell_value == 0:
-        retval =  np.where(np.logical_not(np.logical_or.reduce(X)))[0]
-        if retval:
-            print('yay')
-        return retval
-
-    return np.where(np.logical_and.reduce(X))[0]
+        return np.where(np.logical_not(np.logical_or.reduce(T)))[0]
+    else:
+        return np.where(np.logical_and.reduce(T))[0]
 
 
-def keep_by_cell_value(rows_or_columns, index, cell_value=1):
+def keep_by_cell_value(rows_or_columns, index, cell_value):
     """
     Given candidates for a row / column, filter out all those rows/columns
     that do not have `cell_value` on the index `index`.
@@ -85,17 +69,37 @@ def keep_by_cell_value(rows_or_columns, index, cell_value=1):
                [1,0,1,1,0] ]
 
     """
-
-    # old version. 0.697 --> 0.187 with the new one
-    # X = np.vstack(rows_or_columns)
-    # indices = np.where(X[:, index] == cell_value)[0]
-    # return X[indices, :]
-
     T = np.array(rows_or_columns)
-    return T[np.where(T[:,index])[0]]
+    retval = T[T[:, index] == cell_value]
+    return retval
 
 
-def enforce_cell_constraints(row_candidates, col_candidates, column_size, row_size, cell_value=1):
+def find_critical_cells(segment_candidates):
+    """
+    Finds common 0's and 1's in `segment_candidates` 
+
+    Example: segment_candidates = [ [[0, 1, 0], [1, 1, 0]],
+                                    [[1, 1, 1]],
+                                    [[0, 1, 1], [1, 1, 0]] ]
+             --> critical = [[1], [0, 1, 2], [1]]
+
+             returns [(0,1), (1,0), (1,1), (1,2), (2,1)]
+    """
+
+    L = []
+    for idx, candidates in enumerate(segment_candidates):
+        critical_blacks = _find_common_cells(candidates, cell_value=1)
+        if len(critical_blacks):
+            L.append((critical_blacks, idx, 1))
+
+        critical_whites = _find_common_cells(candidates, cell_value=0)
+        if len(critical_whites):
+            L.append((critical_whites, idx, 0))
+
+    return L
+
+
+def enforce_cell_constraints(row_candidates, col_candidates, column_size, row_size,  max_iter=1):
     """
     row_candidates = X
     col_candidates = Y
@@ -109,53 +113,46 @@ def enforce_cell_constraints(row_candidates, col_candidates, column_size, row_si
     rows = copy.deepcopy(row_candidates)
     cols = copy.deepcopy(col_candidates)
 
-    def find_critical_cells(segment_candidates, cell_value):
-        """
-        Example: segment_candidates = [ [[0, 1, 0], [1, 1, 0]],
-                                        [[1, 1, 1]],
-                                        [[0, 1, 1], [1, 1, 0]] ]
-                 --> critical = [[1], [0, 1, 2], [1]]
-
-                 returns [(0,1), (1,0), (1,1), (1,2), (2,1)]
-        """
-
-        L = []
-        for idx, candidates in enumerate(segment_candidates):
-            critical_indices = find_common_cells(candidates, cell_value)
-            entry = (idx, critical_indices)
-            L.append(entry)
-
-        retval = itertools.chain.from_iterable(
-            [itertools.product([x], y) for x, y in L])
-        return retval
-
+    step = 0
     while True:
+        step += 1
 
         _rows = copy.deepcopy(rows)
         _cols = copy.deepcopy(cols)
 
-        for (row_idx, col_idx) in find_critical_cells(rows, cell_value):
-            cell_index = column_size - row_idx  - 1 # rebase for columns
-            new = keep_by_cell_value(cols[col_idx], cell_index, cell_value)
-            if len(new) == 0:
-                raise InfeasibleStateException
+        for indices, row_idx, cell_value in find_critical_cells(rows):
+            for col_idx, each in zip(indices, cols[indices]):
+                X = np.array(each)
+                filtered = X[X[:, column_size - 1 - row_idx] == cell_value]
+                if len(filtered) == 0:
+                    raise InfeasibleStateException
 
-            cols[col_idx] = new
+                cols[col_idx] = filtered
 
-        for (row_idx, col_idx) in find_critical_cells(cols, cell_value):
-            row_idx, cell_index = column_size - 1 - col_idx, row_idx
-            new = keep_by_cell_value(rows[row_idx], cell_index, cell_value)
-            if len(new) == 0:
-                raise InfeasibleStateException
+        for indices, col_idx, cell_value in find_critical_cells(cols):
+            row_indices = column_size - 1 - indices
+            for row_idx, each in zip(row_indices, rows[row_indices]):
+                row_candidates = np.array(each)
+                filtered = row_candidates[row_candidates[:, col_idx] == cell_value]
+                if len(filtered) == 0:
+                    raise InfeasibleStateException
 
-            rows[row_idx] = new
+                rows[row_idx] = filtered
 
-        # import pdb; pdb.set_trace()
+        row_unchanged = np.all([np.equal(len(x), len(y)) for x, y in zip(_rows, rows)])
+        col_unchanged = np.all([np.equal(len(x), len(y)) for x, y in zip(_cols, cols)])
 
-        L = [np.equal(len(x),len(y)) for x,y in zip(_rows, rows)]
-        row_unchanged = np.all(L)
-        L = [np.equal(len(x),len(y)) for x,y in zip(_cols, cols)]
-        col_unchanged = np.all(L)
-
-        if row_unchanged and col_unchanged:
+        if (row_unchanged and col_unchanged) or (step == max_iter):
             return rows, cols
+
+
+def iter_enforce_cell_constraints(row_candidates, col_candidates, column_size, row_size):
+
+    x, y = None, None
+    for i in [3, 1]:
+        try:
+            x, y = enforce_cell_constraints(row_candidates, col_candidates, column_size, row_size, max_iter=i)
+            return (x, y)
+        except InfeasibleStateException:
+            pass
+    raise InfeasibleStateException
